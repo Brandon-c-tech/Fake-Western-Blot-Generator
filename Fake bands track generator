@@ -1,0 +1,101 @@
+import turtle
+import math
+import random
+
+window = turtle.Screen() #creat a screen  
+turtle.hideturtle()
+turtle.screensize(1920, 1080)
+
+turtle.colormode(255)
+def get_random_gray(dark):
+    # 基于一定的范围生成随机的灰色，输入的值越大灰色越深。
+    # Random grays are generated based on a certain range. The larger the input value, the darker the grays.
+    c1 = random.randint(235,245)
+    c2 = c1 + random.randint(-1,1)*random.randint(0,5)
+    c3 = c1 + random.randint(-1,1)*random.randint(0,5)
+    return (c1 - dark, c2 - dark, c3 - dark)
+
+band_width = 45
+band_height = 8
+band_random_curvue = 1
+# 由用户输入的三个参数，分别是条带宽度、高度和扭曲程度。
+# The three parameters entered by the user are the width of the band or bands, the height, and the distortion.
+
+band_gap = random.uniform(0.9,1) * 0.3 * band_width
+turtle.pensize(band_height)
+window.bgcolor(get_random_gray(40))
+
+def rectangle_band(mutiband):
+    # 基于三角函数绘制随机的单一条带。如果只需要生成一条条带，mutiband参数为0.
+    # Draw a random single band based on trigonometric functions. If only one band needs to be generated, the mutiband parameter is 0.
+    turtle.pencolor(get_random_gray(230))
+    # 该参数用于控制条带的深浅。
+    # This parameter is used to control the depth of the band.
+    rc_1 = 3 * random.uniform(0.5,1) + band_random_curvue
+    rc_2 = 3 * random.uniform(0.5,1) + band_random_curvue
+    rc_3 = random.uniform(0.5,1)
+    rc_4 = random.uniform(0.5,1)
+    y_ini = band_random_curvue * (rc_3 * math.sin(3*mutiband/band_width + rc_1) + rc_4 * math.cos(3*mutiband/band_width + rc_2))
+    # 这个参数可以帮助矫正由随机三角函数带来的y轴偏差。
+    # This parameter helps to correct the Y-axis deviation caused by random trigonometric functions.
+    turtle.pu()
+    turtle.setx(mutiband)
+    turtle.sety(y_ini)
+    turtle.pd()
+    for i in range(mutiband, mutiband + band_width):
+        turtle.setx(i)
+        turtle.sety(band_random_curvue * (rc_3 * math.sin(3*i/band_width + rc_1) + rc_4 * math.cos(3*i/band_width + rc_2))-y_ini)
+    turtle.pu()
+
+def muti_rec_band(band_number):
+    # 生成多个水平排布的条带。
+    # Generate multiple horizontal bands.
+    band_number = int(band_number)
+    mutiband = 0
+    mutiband = int(mutiband)
+    for x in range(0, band_number):
+        mutiband = int(mutiband)
+        rectangle_band(mutiband)
+        x = x + 1
+        mutiband = mutiband + band_width + band_gap
+
+def whole_curve_bands(band_number):
+    # 该函数拟让水平排布的条带形成整体的扭曲。This function is intended to cause the horizontal band to distort the whole.
+    # 待完善，让y坐标基于一个随机生成且会旋转的椭圆下半部分，能够更好的模拟边缘效应。To be continued.
+    band_number = int(band_number)
+
+    turtle.pencolor(get_random_gray(230))
+
+    rc_1 = 3 * random.uniform(0.5,1) + band_random_curvue
+    rc_2 = 3 * random.uniform(0.5,1) + band_random_curvue
+    rc_3 = random.uniform(0.5,1)
+    rc_4 = random.uniform(0.5,1)
+
+    y_ini = band_random_curvue * (rc_3 * math.sin(3/band_width + rc_1) + rc_4 * math.cos(3/band_width + rc_2))
+
+    turtle.pu()
+    
+    turtle.setx(0)
+    turtle.sety(y_ini)
+
+    for x in range(0, band_number):
+        
+        x = x + 1
+
+        turtle.pd()
+
+        band_ini = int((x-1) * (band_width + band_gap))
+        band_end = int((x * band_width) + ((x-1) * band_gap))
+        gap_ini = int(x * (band_width + band_gap))
+
+        for i in range(band_ini, band_end):
+            turtle.setx(i)
+            turtle.sety(band_random_curvue * (rc_3 * math.sin(3*i/band_width + rc_1) + rc_4 * math.cos(3*i/band_width + rc_2))-y_ini)
+
+        turtle.pu()
+
+        for i in range(band_end, gap_ini):
+            turtle.setx(i)
+            turtle.sety(band_random_curvue * (rc_3 * math.sin(3*i/band_width + rc_1) + rc_4 * math.cos(3*i/band_width + rc_2))-y_ini)
+
+window.exitonclick()
